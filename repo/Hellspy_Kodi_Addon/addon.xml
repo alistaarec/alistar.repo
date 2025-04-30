@@ -14,8 +14,8 @@
         <provides>video</provides>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary lang="en_GB">TV Nova</summary>
-        <summary lang="cs_CZ">TV Nova</summary>
+        <summary lang="en_GB">Hell Play</summary>
+        <summary lang="cs_CZ">Hell Play</summary>
         <description lang="en_GB">Doplněk, který streamuje filmy a seriály z Hellspy.to a pro databázi jde připojit k TMDb Helperu</description>
         <description lang="cs_CZ">Doplněk, který streamuje filmy a seriály z Hellspy.to a pro databázi jde připojit k TMDb Helperu</description>
         <platform>all</platform>
