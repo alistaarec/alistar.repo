@@ -83,8 +83,8 @@
         <disclaimer />
         <platform>all</platform>
         <assets>
-            <icon>icon.png</icon>
-            <icon>fanart.png</icon>
+			<icon>icon.png</icon>
+			<fanart>fanart.png</fanart>
         </assets>
     </extension>
 </addon></addons>
