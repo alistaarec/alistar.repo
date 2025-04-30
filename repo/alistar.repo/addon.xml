@@ -2,9 +2,9 @@
 <addon id="repo.alistar.id" name="Alistar Repo" version="1.0.0" provider-name="Alistarec">
     <extension point="xbmc.addon.repository" name="Example Repository">
         <dir> 
-            <info compressed="false">https://raw.githubusercontent.com/alistarec/alistar.repo/master/blob/repo/zips/addons.xml</info>
-            <checksum>https://raw.githubusercontent.com/alistarec/alistar.repo/master/blob/repo/zips/addons.xml.md5</checksum>
-            <datadir zip="true">https://raw.githubusercontent.com/alistarec/alistar.repo/master/blob/repo/zips/</datadir>
+            <info compressed="false">https://raw.githubusercontent.com/alistaarec/alistar.repo/refs/heads/master/repo/zips/addons.xml</info>
+            <checksum>https://raw.githubusercontent.com/alistaarec/alistar.repo/refs/heads/master/repo/zips/addons.xml.md5</checksum>
+            <datadir zip="true">https://raw.githubusercontent.com/alistaarec/alistar.repo/refs/heads/master/repo/zips/</datadir>
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
