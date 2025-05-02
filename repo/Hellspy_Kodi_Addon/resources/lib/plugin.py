@@ -15,7 +15,7 @@ import sys
 
 plugin = routing.Plugin()
 # Your TMDb API Key here
-API_KEY = '6a1914c2adb1e76a61e116d814cfdd30'
+API_KEY = 'xxxxxxxxxxxxxxxxx'
 
 @plugin.route('/')
 def home():
@@ -55,7 +55,7 @@ def search_and_show_results(query):
 def play_from_tmdb():
 
     dialog = xbmcgui.Dialog()
-    query = dialog.input("Zadej název titulu:")       
+    query = dialog.input("...")       
 
     results = search_hellspy(query)
 
@@ -242,6 +242,88 @@ def play_stream(stream_url):
         xbmcplugin.setResolvedUrl(int(sys.argv[1]), True, list_item)
     else:
         xbmcgui.Dialog().notification("Error", "Chyba pri prehravani streamu", xbmcgui.NOTIFICATION_ERROR, 5000)
+
+@plugin.route('/play_tmdb')
+def play_tmdb():
+    import xbmcaddon
+
+    params = dict(urllib.parse.parse_qsl(sys.argv[2][1:]))
+    tmdb_id = params.get('tmdb_id')
+    content_type = params.get('type', 'movie')  # 'movie' or 'episode'
+    season = params.get('season')
+    episode = params.get('episode')
+
+    if not tmdb_id:
+        xbmcgui.Dialog().notification("Chyba", "Chybi TMDb ID", xbmcgui.NOTIFICATION_ERROR, 5000)
+        return
+
+    # Fetch metadata from TMDb
+    if content_type == 'movie':
+        url = f"https://api.themoviedb.org/3/movie/{tmdb_id}"
+    else:
+        url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/season/{season}/episode/{episode}"
+
+    response = requests.get(url, params={"api_key": API_KEY, "language": "en-US"})
+
+    if response.status_code != 200:
+        xbmcgui.Dialog().notification("TMDb chyba", f"Chyba kod: {response.status_code}", xbmcgui.NOTIFICATION_ERROR, 5000)
+        return
+
+    data = response.json()
+
+    # Construct search query from title (and optionally episode name)
+    if content_type == 'movie':
+        search_query = data.get('title')
+    else:
+        show_name = data.get('show_name') or data.get('name')
+        ep_name = data.get('name')
+        search_query = f"{show_name} S{int(season):02}E{int(episode):02}" if season and episode else ep_name
+
+    if not search_query:
+        xbmcgui.Dialog().notification("Chyba", "Nedokážu vytvořit dotaz pro hledání", xbmcgui.NOTIFICATION_ERROR, 5000)
+        return
+
+    # Search on Hellspy
+    results = search_hellspy(search_query)
+    if not results:
+        xbmcgui.Dialog().notification("Nenalezeno", "Žádný stream nenalezen.", xbmcgui.NOTIFICATION_INFO, 5000)
+        return
+
+    options = [f"{res['title']} ({res['size']}, {res['duration']})" for res in results]
+    # Show select dialog
+    dialog = xbmcgui.Dialog()
+    selected_index = dialog.select("Choose stream to play:", options)
+
+    if selected_index == -1:
+        xbmcgui.Dialog().notification("Canceled", "No stream selected.", xbmcgui.NOTIFICATION_INFO, 3000)
+        return
+
+    selected_result = results[selected_index]
+
+    stream_url = get_stream_url(selected_result["url"])
+
+    if stream_url:
+        # Show temporary loading dialog
+        progress = xbmcgui.DialogProgress()
+        progress.create("Načítání streamu", "Prosím čekejte...")
+
+        # Simulate loading delay (helps mask the player chooser popup)
+        
+
+        # Close progress dialog
+        progress.close()
+
+        # Play directly using xbmc.Player (not setResolvedUrl)
+        list_item = xbmcgui.ListItem(path=stream_url)
+        list_item.setMimeType('video/mp4')
+        list_item.setProperty('inputstream', 'inputstream.adaptive')
+        list_item.setContentLookup(True)
+
+        xbmc.Player().play(stream_url, list_item)
+
+        time.sleep(1.2)
+    else:
+        xbmcgui.Dialog().notification("Chyba", "Stream nebyl nalezen.", xbmcgui.NOTIFICATION_ERROR, 5000)
 
 
 if __name__ == '__main__':
